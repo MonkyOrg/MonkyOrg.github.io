@@ -47,14 +47,17 @@ echo ""
 # --- Check dependencies ---
 
 if ! command -v node &>/dev/null; then
-  err "Node.js não encontrado. Instale o Node.js 20+ antes de continuar."
+  err "Node.js não encontrado. Instale o Node.js 22+ antes de continuar."
   err "https://nodejs.org/"
   exit 1
 fi
 
+# mediasoup (o SFU do Monky) exige Node.js 22+. Em versões anteriores o npm
+# apenas emite um aviso de engine e segue instalando, deixando o servidor sem
+# worker de voz — por isso a checagem aqui é bloqueante.
 NODE_MAJOR=$(node -e "process.stdout.write(String(process.versions.node.split('.')[0]))")
-if [ "$NODE_MAJOR" -lt 20 ]; then
-  err "Node.js $NODE_MAJOR detectado, mas o Monky CLI requer Node.js 20+."
+if [ "$NODE_MAJOR" -lt 22 ]; then
+  err "Node.js $NODE_MAJOR detectado, mas o Monky CLI requer Node.js 22+."
   exit 1
 fi
 
@@ -140,7 +143,25 @@ bold "Instalando Monky CLI..."
 info "$TGZ_URL"
 echo ""
 
-npm install -g "$TGZ_URL"
+# O mediasoup compila o binário do worker em um script de postinstall. O npm
+# 11.16 passou a avisar que scripts de dependências serão bloqueados e o npm 12
+# os bloqueia de fato, o que deixaria o SFU sem worker e degradaria a voz para
+# P2P silenciosamente. Uma dependência não pode autorizar os próprios scripts —
+# só quem instala pode —, então a permissão é concedida aqui. Versões antigas do
+# npm não conhecem a flag, por isso ela só é adicionada quando faz sentido.
+NPM_VERSION=$(npm -v)
+NPM_MAJOR=${NPM_VERSION%%.*}
+NPM_MINOR=$(echo "$NPM_VERSION" | cut -d. -f2)
+INSTALL_FLAGS=()
+if [ "$NPM_MAJOR" -gt 11 ] || { [ "$NPM_MAJOR" -eq 11 ] && [ "$NPM_MINOR" -ge 16 ]; }; then
+  INSTALL_FLAGS+=(--allow-scripts=mediasoup)
+fi
+
+if [ ${#INSTALL_FLAGS[@]} -gt 0 ]; then
+  npm install -g "${INSTALL_FLAGS[@]}" "$TGZ_URL"
+else
+  npm install -g "$TGZ_URL"
+fi
 
 echo ""
 ok "✅ Monky CLI instalado com sucesso!"
