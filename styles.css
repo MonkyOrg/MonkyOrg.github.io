@@ -107,9 +107,64 @@ h1 {
   border-color: #5865f2;
 }
 
+.community {
+  margin-bottom: 2rem;
+  padding: 1.6rem 1.5rem;
+  border: 1px solid #5865f2;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #1a1a2e 0%, #141420 100%);
+  box-shadow: 0 0 40px rgba(88, 101, 242, 0.15);
+}
+
+.community-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(88, 101, 242, 0.18);
+  color: #aab1ff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.community h2 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.community p {
+  color: #aaa;
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+
+.community-button {
+  display: inline-block;
+  padding: 0.75rem 1.6rem;
+  border-radius: 10px;
+  background: #5865f2;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.community-button:hover { background: #4752c4; }
+.community-button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+.community-hint {
+  margin-top: 0.8rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .community-button, .translations a { transition: none; }
+}
+
 footer {
-  position: fixed;
-  bottom: 1.5rem;
+  padding: 1.5rem 0;
   font-size: 0.8rem;
   color: #444;
 }
